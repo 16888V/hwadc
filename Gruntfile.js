@@ -1,43 +1,23 @@
-/*!
- * Bootsblogger's Gruntfile
- * https://bootsblogger.github.io
- * Copyright 2017 Igoy Nawamreh
- * Licensed under MIT (https://github.com/bootsblogger/bootsblogger/blob/master/LICENSE)
- */
-
 module.exports = function(grunt) {
   'use strict';
 
   // Force use of Unix newlines
   grunt.util.linefeed = '\n';
 
-  var isTravis = require('is-travis');
-
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
 
-    clean: {
-      'dist': 'dist',
-      'css': [
-        'template-src/includable/assets/css/bootstrap',
-        'template-src/includable/assets/css/bootsblogger',
-        'docs/assets/css/bootsblogger'
-      ]
-    },
+    banner: '/*!\n' +
+            ' * Bootsblogger v<%= pkg.version %> (<%= pkg.homepage %>)\n' +
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+            ' * Licensed under <%= pkg.license %> (https://github.com/bootsblogger/bootsblogger/blob/master/LICENSE)\n' +
+            ' */\n',
 
-    scsslint: {
-      options: {
-        bundleExec: true,
-        config: '.scss-lint.yml',
-        reporterOutput: null
-      },
-      bootstrap: {
-        src: 'scss/bootstrap/*.scss'
-      },
-      bootsblogger: {
-        src: 'scss/bootsblogger/*.scss'
-      }
+    clean: {
+      dist: 'dist',
+      templateAssets: ['template-src/includes/assets/bootstrap', 'template-src/includes/assets/bootsblogger'],
+      docs: ['docs/assets/bootstrap', 'docs/assets/bootsblogger']
     },
 
     sass: {
@@ -50,13 +30,71 @@ module.exports = function(grunt) {
       },
       bootstrap: {
         files: {
-          'template-src/includable/assets/css/bootstrap/bootstrap.css': 'scss/bootstrap/bootstrap.scss'
+          'template-src/includes/assets/bootstrap/css/bootstrap.css': 'scss/bootstrap/bootstrap.scss'
         }
       },
       bootsblogger: {
         files: {
-          'template-src/includable/assets/css/bootsblogger/bootsblogger.css': 'scss/bootsblogger/bootsblogger.scss'
+          'template-src/includes/assets/bootsblogger/css/bootsblogger.css': 'scss/bootsblogger/bootsblogger.scss'
         }
+      },
+      docs: {
+        files: {
+          'docs/assets/css/docs.css': 'docs/assets/scss/docs.scss'
+        }
+      }
+    },
+
+    scsslint: {
+      options: {
+        bundleExec: true,
+        config: 'scss/.scss-lint.yml',
+        reporterOutput: null
+      },
+      bootstrap: {
+        src: ['scss/bootstrap/*.scss', '!scss/bootstrap/_normalize.scss']
+      },
+      bootsblogger: {
+        src: ['scss/bootsblogger/*.scss', '!scss/bootsblogger/_gadgets.scss']
+      },
+      docs: {
+        src: ['docs/assets/scss/*.scss', '!docs/assets/scss/docs.scss']
+      }
+    },
+
+    cssmin: {
+      options: {
+        compatibility: 'ie9,-properties.zeroUnits',
+        keepSpecialComments: '*',
+        sourceMap: true,
+        advanced: false
+      },
+      bootstrap: {
+        files: [{
+          expand: true,
+          cwd: 'template-src/includes/assets/bootstrap/css',
+          src: ['*.css', '!*.min.css'],
+          dest: 'template-src/includes/assets/bootstrap/css',
+          ext: '.min.css'
+        }]
+      },
+      bootsblogger: {
+        files: [{
+          expand: true,
+          cwd: 'template-src/includes/assets/bootsblogger/css',
+          src: ['*.css', '!*.min.css'],
+          dest: 'template-src/includes/assets/bootsblogger/css',
+          ext: '.min.css'
+        }]
+      },
+      docs: {
+        files: [{
+          expand: true,
+          cwd: 'docs/assets/css',
+          src: ['*.css', '!*.min.css'],
+          dest: 'docs/assets/css',
+          ext: '.min.css'
+        }]
       }
     },
 
@@ -75,125 +113,136 @@ module.exports = function(grunt) {
               // Official browser support policy:
               // https://v4-alpha.getbootstrap.com/getting-started/browsers-devices/#supported-browsers
               //
-              'Chrome >= 45', // Exact version number here is kinda arbitrary
-              'Firefox ESR',
+              'Chrome >= 35', // Exact version number here is kinda arbitrary
+              // Rather than using Autoprefixer's native "Firefox ESR" version specifier string,
+              // we deliberately hardcode the number. This is to avoid unwittingly severely breaking the previous ESR in the event that:
+              // (a) we happen to ship a new Bootstrap release soon after the release of a new ESR,
+              //     such that folks haven't yet had a reasonable amount of time to upgrade; and
+              // (b) the new ESR has unprefixed CSS properties/values whose absence would severely break webpages
+              //     (e.g. `box-sizing`, as opposed to `background: linear-gradient(...)`).
+              //     Since they've been unprefixed, Autoprefixer will stop prefixing them,
+              //     thus causing them to not work in the previous ESR (where the prefixes were required).
+              'Firefox >= 38', // Current Firefox Extended Support Release (ESR); https://www.mozilla.org/en-US/firefox/organizations/faq/
               // Note: Edge versions in Autoprefixer & Can I Use refer to the EdgeHTML rendering engine version,
               // NOT the Edge app version shown in Edge's "About" screen.
               // For example, at the time of writing, Edge 20 on an up-to-date system uses EdgeHTML 12.
               // See also https://github.com/Fyrd/caniuse/issues/1928
               'Edge >= 12',
-              'Explorer >= 10',
+              'Explorer >= 9',
               // Out of leniency, we prefix these 1 version further back than the official policy.
-              'iOS >= 9',
-              'Safari >= 9',
+              'iOS >= 8',
+              'Safari >= 8',
               // The following remain NOT officially supported, but we're lenient and include their prefixes to avoid severely breaking in them.
-              'Android >= 4.4',
-              'Opera >= 30'
+              'Android 2.3',
+              'Android >= 4',
+              'Opera >= 12'
             ]
           })
         ]
       },
       bootstrap: {
-        src: 'template-src/includable/assets/css/bootstrap/*.css'
+        src: 'template-src/includes/assets/bootstrap/css/*.css'
       },
       bootsblogger: {
-        src: 'template-src/includable/assets/css/bootsblogger/*.css'
+        src: 'template-src/includes/assets/bootsblogger/css/*.css'
+      },
+      docs: {
+        src: 'docs/assets/css/*.css'
       }
     },
 
-    cssmin: {
+    jscs: {
       options: {
-        compatibility: 'ie10,-properties.zeroUnits',
-        keepSpecialComments: '*',
-        sourceMap: true,
-        advanced: false
-      },
-      bootstrap: {
-        files: [{
-          expand: true,
-          cwd: 'template-src/includable/assets/css/bootstrap',
-          src: ['*.css', '!*.min.css'],
-          dest: 'template-src/includable/assets/css/bootstrap',
-          ext: '.min.css'
-        }]
+        config: 'js/.jscsrc'
       },
       bootsblogger: {
-        files: [{
-          expand: true,
-          cwd: 'template-src/includable/assets/css/bootsblogger',
-          src: ['*.css', '!*.min.css'],
-          dest: 'template-src/includable/assets/css/bootsblogger',
-          ext: '.min.css'
-        }]
+        src: 'js/bootsblogger/**/*.js'
+      },
+      docs: {
+        src: 'docs/assets/js/src/*.js'
+      }
+    },
+
+    concat: {
+      bootsblogger: {
+        src: [
+          'js/bootsblogger/post-clickable.js',
+          'js/bootsblogger/widget-collapse.js',
+          'js/bootsblogger/comments.js'
+        ],
+        dest: 'template-src/includes/assets/bootsblogger/js/bootsblogger.js'
+      },
+      bootsbloggerJSON: {
+        src: [
+          'js/bootsblogger/json/count.js',
+          'js/bootsblogger/json/posts-default.js',
+          'js/bootsblogger/json/posts-card.js',
+          'js/bootsblogger/json/labels-lists.js',
+          'js/bootsblogger/json/labels-custom.js',
+          'js/bootsblogger/json/labels-select.js'
+        ],
+        dest: 'template-src/includes/assets/bootsblogger/js/bootsblogger-json.js'
+      },
+      docs: {
+        src: [
+          'docs/assets/js/vendor/anchor.min.js',
+          'docs/assets/js/vendor/clipboard.min.js',
+          'docs/assets/js/vendor/holder.min.js',
+          'docs/assets/js/src/application.js'
+        ],
+        dest: 'docs/assets/js/docs.js'
+      }
+    },
+
+    stamp: {
+      bootsblogger: {
+        options: {
+          banner: '<%= banner %>'
+        },
+        files: {
+          src: '<%= concat.bootsblogger.dest %>'
+        }
+      },
+      bootsbloggerJSON: {
+        options: {
+          banner: '<%= banner %>'
+        },
+        files: {
+          src: '<%= concat.bootsbloggerJSON.dest %>'
+        }
+      }
+    },
+
+    uglify: {
+      options: {
+        compress: {
+          warnings: false
+        },
+        mangle: true,
+        preserveComments: /^!|@preserve|@license|@cc_on/i
+      },
+      bootsblogger: {
+        src: '<%= concat.bootsblogger.dest %>',
+        dest: 'template-src/includes/assets/bootsblogger/js/bootsblogger.min.js'
+      },
+      bootsbloggerJSON: {
+        src: '<%= concat.bootsbloggerJSON.dest %>',
+        dest: 'template-src/includes/assets/bootsblogger/js/bootsblogger-json.min.js'
+      },
+      docs: {
+        src: '<%= concat.docs.dest %>',
+        dest: 'docs/assets/js/docs.min.js'
       }
     },
 
     bake: {
-      core: {
+      template: {
         options: {
           basePath: 'template-src',
           content: 'template-src/config.json'
         },
         files: {
-          'dist/template.xml': 'template-src/index.xml'
-        }
-      }
-    },
-
-    exec: {
-      'docs-lint': {
-        command: 'npm run docs-lint'
-      }
-    },
-
-    copy: {
-      docs: {
-        expand: true,
-        cwd: 'template-src/includable/assets/css',
-        src: 'bootsblogger/*',
-        dest: 'docs/assets/css'
-      }
-    },
-
-    watch: {
-      css: {
-        files: ['scss/**/*.scss'],
-        tasks: [
-          'clean:dist',
-          'clean:css',
-          'css-lint',
-          'css-compile',
-          'css-prefix',
-          'css-minify',
-          'template-compile',
-          'copy:docs'
-        ]
-      },
-      template: {
-        files: [
-          'template-src/**/*.xml',
-          'template-src/**/*.css',
-          'template-src/**/*.js',
-          'template-src/config.json',
-          '!template-src/includable/assets/css/bootstrap/*',
-          '!template-src/includable/assets/css/bootsblogger/*'
-        ],
-        tasks: [
-          'clean:dist',
-          'template-compile'
-        ]
-      }
-    },
-
-    gitcheckout: {
-      compiled: {
-        options: {
-          branch: [
-            'dist/.',
-            'template-src/includable/assets/css/bootstrap/.',
-            'template-src/includable/assets/css/bootsblogger/.',
-            'docs/assets/css/bootsblogger/.'
-          ]
+          'dist/template.xml': 'template-src/template-src.xml'
         }
       }
     },
@@ -212,9 +261,58 @@ module.exports = function(grunt) {
       }
     },
 
+    htmllint: {
+      options: {
+        ignore: [
+          'Attribute “autocomplete” is only allowed when the input type is “color”, “date”, “datetime”, “datetime-local”, “email”, “hidden”, “month”, “number”, “password”, “range”, “search”, “tel”, “text”, “time”, “url”, or “week”.',
+          'Attribute “autocomplete” not allowed on element “button” at this point.',
+          'Consider using the “h1” element as a top-level heading only (all “h1” elements are treated as top-level headings by many screen readers and other tools).',
+          'Element “div” not allowed as child of element “progress” in this context. (Suppressing further errors from this subtree.)',
+          'Element “img” is missing required attribute “src”.',
+          'The “color” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “date” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “datetime” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “datetime-local” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “month” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “time” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.',
+          'The “week” input type is not supported in all browsers. Please be sure to test, and consider using a polyfill.'
+        ]
+      },
+      docs: {
+        src: '_gh_pages/**/*.html'
+      }
+    },
+
+    htmlhint: {
+      docs: {
+        options: {
+          htmlhintrc: 'docs/.htmlhintrc'
+        },
+        src: '_gh_pages/**/*.html'
+      }
+    },
+
+    copy: {
+      bootstrapJs: {
+        expand: true,
+        cwd: 'js/bootstrap/',
+        src: 'js/*',
+        dest: 'template-src/includes/assets/bootstrap/'
+      },
+      docs: {
+        expand: true,
+        cwd: 'template-src/includes/assets/',
+        src: [
+          'bootstrap/**/*',
+          'bootsblogger/**/*'
+        ],
+        dest: 'docs/assets/'
+      }
+    },
+
     buildcontrol: {
       options: {
-        dir: './_gh_pages',
+        dir: '_gh_pages',
         commit: true,
         push: true,
         message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
@@ -235,12 +333,45 @@ module.exports = function(grunt) {
           level: 9,
           pretty: true
         },
-        files: [{
-          expand: true,
-          cwd: 'dist/',
-          src: ['**'],
-          dest: 'bootsblogger-<%= pkg.version %>-dist'
-        }]
+        files: [
+          {
+            expand: true,
+            cwd: 'dist/',
+            src: ['**'],
+            dest: 'bootsblogger-<%= pkg.version %>-dist'
+          }
+        ]
+      }
+    },
+
+    watch: {
+      bootstrapSass: {
+        files: ['scss/bootstrap/**/*.scss', 'scss/_custom.scss'],
+        tasks: ['test-sass-bootstrap', 'compile-sass-bootstrap', 'copy:docs', 'compile-template']
+      },
+      bootsbloggerSass: {
+        files: ['scss/bootsblogger/**/*.scss', 'scss/_custom.scss'],
+        tasks: ['test-sass-bootsblogger', 'compile-sass-bootsblogger', 'copy:docs', 'compile-template']
+      },
+      docsSass: {
+        files: 'docs/assets/scss/**/*.scss',
+        tasks: ['test-sass-docs', 'compile-sass-docs']
+      },
+      bootstrapJs: {
+        files: 'js/bootstrap/js/*.js',
+        tasks: ['copy:bootstrapJs', 'copy:docs', 'compile-template']
+      },
+      bootsbloggerJs: {
+        files: 'js/bootsblogger/**/*.js',
+        tasks: ['test-js-bootsblogger', 'compile-js-bootsblogger', 'copy:docs', 'compile-template']
+      },
+      docsJs: {
+        files: 'docs/assets/js/src/*.js',
+        tasks: ['compile-js-docs']
+      },
+      bake: {
+        files: ['template-src/**/*.xml', 'template-src/**/*.css', 'template-src/**/*.js', '!template-src/**/bootsblogger/**/*', '!template-src/**/bootstrap/**/*', 'template-src/config.json'],
+        tasks: ['compile-template']
       }
     }
 
@@ -249,62 +380,71 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
   require('time-grunt')(grunt);
 
-  var runSubset = function (subset) {
-    return !process.env.BOOTSBLOGGER_TEST || process.env.BOOTSBLOGGER_TEST === subset;
-  };
-  var isUndefOrNonZero = function (val) {
-    return val === undefined || val !== '0';
-  };
-
   // CSS task.
-  grunt.registerTask('css-lint', ['scsslint:bootstrap', 'scsslint:bootsblogger']);
-  grunt.registerTask('css-compile', ['sass:bootstrap', 'sass:bootsblogger']);
-  grunt.registerTask('css-prefix', ['postcss:bootstrap', 'postcss:bootsblogger']);
-  grunt.registerTask('css-minify', ['cssmin:bootstrap', 'cssmin:bootsblogger']);
+  grunt.registerTask('test-sass-bootstrap', ['scsslint:bootstrap']);
+  grunt.registerTask('test-sass-bootsblogger', ['scsslint:bootsblogger']);
+  grunt.registerTask('compile-sass-bootstrap', ['sass:bootstrap', 'cssmin:bootstrap', 'postcss:bootstrap']);
+  grunt.registerTask('compile-sass-bootsblogger', ['sass:bootsblogger', 'cssmin:bootsblogger', 'postcss:bootsblogger']);
+
+  // JS task.
+  grunt.registerTask('test-js-bootsblogger', ['jscs:bootsblogger']);
+  grunt.registerTask('compile-js-bootstrap', ['copy:bootstrapJs']); // Just copy
+  grunt.registerTask('compile-js-bootsblogger', ['concat:bootsblogger', 'stamp:bootsblogger', 'uglify:bootsblogger', 'concat:bootsbloggerJSON', 'stamp:bootsbloggerJSON', 'uglify:bootsbloggerJSON']);
 
   // Template task.
-  grunt.registerTask('template-compile', ['bake:core']);
+  grunt.registerTask('compile-template', ['bake:template']);
 
   // Docs task.
-  grunt.registerTask('docs-lint', ['jekyll:docs', 'exec:docs-lint']);
+  grunt.registerTask('test-sass-docs', ['scsslint:docs']);
+  grunt.registerTask('compile-sass-docs', ['sass:docs', 'cssmin:docs', 'postcss:docs']);
+  grunt.registerTask('test-js-docs', ['jscs:docs']);
+  grunt.registerTask('compile-js-docs', ['concat:docs', 'uglify:docs']);
+  grunt.registerTask('compile-jekyll-docs', ['jekyll:docs']);
+  grunt.registerTask('validate-html-docs', ['compile-jekyll-docs', 'htmllint:docs', 'htmlhint:docs']);
+  grunt.registerTask('docs-github', ['jekyll:github']);
+  grunt.registerTask('docs', ['test-sass-docs', 'test-js-docs', 'compile-sass-docs', 'compile-js-docs', 'clean:docs', 'copy:docs']);
 
-  // Test task.
-  var testSubtasks = [];
-  // Skip core tests if running a different subset of the test suite
-  if (runSubset('core')) {
-    testSubtasks = testSubtasks.concat([
-      'css-lint',
-      'css-compile',
-      'css-prefix',
-      'css-minify',
-      'template-compile'
-    ]);
-  }
-  if (runSubset('core') && !(isTravis)) {
-    testSubtasks.push('gitcheckout:compiled');
-  }
-  // Skip HTML validation if running a different subset of the test suite
-  if (runSubset('browser') &&
-      isTravis &&
-      // Skip HTML5 validator when [skip validator] is in the commit message
-      isUndefOrNonZero(process.env.BOOTSBLOGGER_DO_VALIDATOR)) {
-    testSubtasks.push('docs-lint');
-  }
-  grunt.registerTask('test', testSubtasks);
+  // Test all.
+  grunt.registerTask('test', [
+    'test-sass-bootstrap',
+    'test-sass-bootsblogger',
+    'test-sass-docs',
+    'test-js-bootsblogger',
+    'test-js-docs',
+    'validate-html-docs'
+  ]);
 
-  // Default task.
-  grunt.registerTask('default', [
+  // Compile all.
+  grunt.registerTask('compile', [
     'clean:dist',
-    'clean:css',
-    'css-lint',
-    'css-compile',
-    'css-prefix',
-    'css-minify',
-    'template-compile',
+    'clean:templateAssets',
+    'clean:docs',
+    'compile-sass-bootstrap',
+    'compile-sass-bootsblogger',
+    'compile-sass-docs',
+    'compile-js-bootstrap',
+    'compile-js-bootsblogger',
+    'compile-js-docs',
+    'compile-template',
     'copy:docs'
   ]);
 
-  grunt.registerTask('prep-release', ['default', 'jekyll:github', 'compress']);
+  // CSS distribution task.
+  grunt.registerTask('dist-css', ['test-sass-bootstrap', 'test-sass-bootsblogger', 'compile-sass-bootstrap', 'compile-sass-bootsblogger']);
+
+  // JS distribution task.
+  grunt.registerTask('dist-js', ['test-js-bootsblogger', 'compile-js-bootstrap', 'compile-js-bootsblogger']);
+
+  // Template distribution task.
+  grunt.registerTask('dist-template', ['compile-template']);
+
+  // Full distribution task.
+  grunt.registerTask('dist', ['clean:dist', 'clean:templateAssets', 'dist-css', 'dist-js', 'dist-template']);
+
+  // Default task.
+  grunt.registerTask('default', ['test', 'compile']);
+
+  grunt.registerTask('prep-release', ['dist', 'docs', 'docs-github', 'compress']);
 
   // Publish to GitHub
   grunt.registerTask('publish', ['buildcontrol:pages']);

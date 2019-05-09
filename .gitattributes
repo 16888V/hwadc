@@ -13,4 +13,4 @@
 *.map   binary
 
 bootstrap.css linguist-vendored=false
-bootsblogger.css linguist-vendored=false
+bootstrap.js linguist-vendored=false

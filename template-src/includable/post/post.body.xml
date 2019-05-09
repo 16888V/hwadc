@@ -1,3 +1,0 @@
-<div expr:class='data:parentDivClass' expr:id='"post-body_" + data:widget.instanceId + "_" + data:post.id'>
-  <data:post.body/>
-</div>

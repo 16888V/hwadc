@@ -1,45 +1,48 @@
 # Dependencies
-markdown:           kramdown
-highlighter:        rouge
+markdown:         kramdown
+highlighter:      rouge
 
 kramdown:
-  auto_ids:         true
+  auto_ids: true
 
 # Permalinks
-permalink:          pretty
+permalink:        pretty
 
 # Server
-source:             docs
-destination:        _gh_pages
-port:               9002
-baseurl:            ""
-url:                "https://bootsblogger.github.io"
-encoding:           UTF-8
+source:           docs
+destination:      _gh_pages
+host:             0.0.0.0
+port:             9001
+baseurl:          ""
+url:              https://bootsblogger.github.io
+encoding:         UTF-8
+exclude:          [assets/scss/]
 
-plugins:
+gems:
   - jekyll-redirect-from
   - jekyll-sitemap
-  - jekyll-toc
 
 # Social
-title:              Bootsblogger
-description:        "Blogger + Bootstrap + <3"
-twitter:            bootsblogger
-facebook:           bootsblogger
-authors:            "Igoy Nawamreh"
-social_logo_path:   /assets/brand/bootsblogger-social-logo.png
-social_image_path:  /assets/brand/bootsblogger-social.png
+title: Bootsblogger
+formula: Blogger + Bootstrap + <3 = Bootsblogger
+description: Bootsblogger adalah sebuah template dasar, dengan fitur-fitur yang luar biasa, untuk menciptakan template Blogger yang luar biasa.
+authors: Igoy Nawamreh
+twitter: #
+googleplus: #
+facebook: #
+social_logo_path: /assets/brand/bootstrap-social-logo.png
+social_image_path: /assets/brand/bootstrap-social.png
 
-# Custom variables
-current_version:    1.0.0-beta
-bootstrap_version:  4.0.0-beta
-repo:               "https://github.com/bootsblogger/bootsblogger"
+# Custom vars
+current_version:   1.0.0-alpha.1
+bootstrap_version: 4.0.0-alpha.5
+repo:              https://github.com/bootsblogger/bootsblogger
 
 download:
-  source:           "https://github.com/bootsblogger/bootsblogger/archive/v1.0.0-beta.zip"
-  dist:             "https://github.com/bootsblogger/bootsblogger/releases/download/v1.0.0-beta/bootsblogger-1.0.0-beta-dist.zip"
+  source:         #
+  dist:           #
 
-demo:               "https://bootsblogger-demo.blogspot.com"
-blog:               "https://bootsblogger-blog.blogspot.com"
-expo:               "https://bootsblogger-expo.blogspot.com"
-themes:             "https://bootsblogger-themes.blogspot.com"
+demo:             https://bootsblogger-demo.blogspot.com
+blog:             https://bootsbloggerblog.blogspot.com
+expo:             https://bootsbloggerexpo.blogspot.com
+templates:        #

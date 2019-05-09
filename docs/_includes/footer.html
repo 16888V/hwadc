@@ -1,20 +1,52 @@
-<footer class="bd-footer">
+<footer class="bd-footer text-muted">
   <div class="container">
     <ul class="bd-footer-links">
-      <li><a href="{{ site.themes }}" target="_blank" rel="noopener">Themes</a></li>
-      <li><a href="{{ site.expo }}" target="_blank" rel="noopener">Expo</a></li>
-      <li><a href="{{ site.blog }}" target="_blank" rel="noopener">Blog</a></li>
-      <li><a href="{{ site.repo }}" target="_blank" rel="noopener">GitHub</a></li>
-      <li><a href="https://twitter.com/{{ site.twitter }}" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://facebook.com/{{ site.facebook }}" target="_blank" rel="noopener">Facebook</a></li>
+      <li><a href="{{ site.repo }}">GitHub</a></li>
+      <li><a href="https://twitter.com/{{ site.twitter }}">Twitter</a></li>
+      <li><a href="https://plus.google.com/{{ site.googleplus }}">Google+</a></li>
+      <li><a href="https://facebook.com/{{ site.facebook }}">Facebook</a></li>
+      <li><a href="{{ site.baseurl }}/examples/">Examples</a></li>
+      <li><a href="{{ site.baseurl }}/about/history/">About</a></li>
+      <li><a href="{{ site.baseurl }}/about/donation/">Donation</a></li>
     </ul>
-    <p><i class="fa fa-code" aria-hidden="true"></i> with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://twitter.com/igoynawamreh" target="_blank" rel="noopener">@igoynawamreh</a> and <a href="https://github.com/bootsblogger/bootsblogger/graphs/contributors" target="_blank" rel="noopener">friends</a>.</p>
-    <p>Currently v{{ site.current_version }}. Code licensed <a href="https://github.com/bootsblogger/bootsblogger/blob/master/LICENSE" target="_blank" rel="license noopener">MIT</a>, docs <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="license noopener">CC BY 3.0</a>.</p>
-    <form class="mt-3" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-      <input type="hidden" name="cmd" value="_s-xclick">
-      <input type="hidden" name="hosted_button_id" value="WHVAQWHFGY28Q">
-      <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="PayPal - The safer, easier way to pay online!">
-      <img src="https://www.paypalobjects.com/id_ID/i/scr/pixel.gif" width="1" height="1" alt="">
-    </form>
+    <p>Dibuat dengan penuh cinta oleh <a href="https://twitter.com/igoynawamreh" target="_blank">@igoynawamreh</a>. Dikelola oleh <a href="https://github.com/orgs/bootsblogger/people">tim utama</a> dengan bantuan para <a href="https://github.com/bootsblogger/bootsblogger/graphs/contributors">kontributor</a>.</p>
+    <p>Saat ini v{{ site.current_version }}. Lisensi kode <a rel="license" href="https://github.com/bootsblogger/bootsblogger/blob/master/LICENSE">MIT</a>, dokumentasi <a rel="license" href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.</p>
+    <p>Halaman dokumentasi ini dibuat menggunakan berkas-berkas dokumentasi Bootstrap, dengan sedikit modifikasi.</p>
   </div>
 </footer>
+
+<script src="{{ site.baseurl }}/assets/js/vendor/jquery.min.js"></script>
+
+<script src="{{ site.baseurl }}/assets/js/vendor/tether.min.js"></script>
+
+<script src="{{ site.baseurl }}/assets/bootstrap/js/bootstrap.min.js"></script>
+
+<script src="{{ site.baseurl }}/assets/bootsblogger/js/bootsblogger.min.js"></script>
+
+<script src="{{ site.baseurl }}/assets/js/docs.min.js"></script>
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{{ site.baseurl }}/assets/js/ie10-viewport-bug-workaround.js"></script>
+<script src="{{ site.baseurl }}/assets/js/ie-emulation-modes-warning.js"></script>
+
+{% if page.layout == "docs" %}
+  <script src="{{ site.baseurl }}/assets/js/vendor/jekyll-search.min.js"></script>
+  <script>
+  SimpleJekyllSearch.init({
+    searchInput: document.getElementById('search-input'),
+    resultsContainer: document.getElementById('search-results'),
+    searchResultTemplate: '<a class="dropdown-item" href="{url}">{title}</a>',
+    noResultsText: '<div class="dropdown-item no-results">Sorry, there are no results for that search.</div>',
+    json: '{{ site.baseurl }}/search.json'
+  })
+  </script>
+{% endif %}
+
+<script>
+Holder.addTheme('gray', {
+  bg: '#777',
+  fg: 'rgba(255,255,255,.75)',
+  font: 'Helvetica',
+  fontweight: 'normal'
+})
+</script>
