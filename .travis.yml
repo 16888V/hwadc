@@ -1,0 +1,26 @@
+sudo: false
+dist: trusty
+language: node_js
+git:
+  depth: 3
+node_js:
+  - "4"
+  - "6"
+before_install:
+  - if [[ `npm -v` != 3* ]]; then npm install -g npm@3; fi
+  - "export TRAVIS_COMMIT_MSG=\"`git log --format=%B --no-merges -n 1`\""
+  - echo "$TRAVIS_COMMIT_MSG" | grep '\[skip validator\]'; export BOOTSBLOGGER_DO_VALIDATOR=$?; true
+install:
+  - bundle install --deployment --jobs=3 --retry=3
+  - npm install
+cache:
+  directories:
+    - node_modules
+    - vendor/bundle
+env:
+  - BOOTSBLOGGER_TEST=core
+  - BOOTSBLOGGER_TEST=browser
+matrix:
+  exclude:
+    - node_js: "4"
+      env: BOOTSBLOGGER_TEST=browser

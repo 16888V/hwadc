@@ -1,4 +1,0 @@
----
-layout: simple
-title: Examples
----
